@@ -1,0 +1,27 @@
+[project]
+name = "imagpt"
+version = "0.1.0"
+description = "AI Image Generator - Generate images using OpenAI API from prompt files or direct input"
+authors = [
+    {name = "Jacob Valdez",email = "jacobfv123@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai (>=1.82.0,<2.0.0)"
+]
+
+[project.scripts]
+imagpt = "imagpt:main"
+generate-images = "imagpt:main"
+
+[tool.poetry]
+packages = [{include = "imagpt", from = "src"}]
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
