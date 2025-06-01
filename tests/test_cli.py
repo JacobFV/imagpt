@@ -72,8 +72,16 @@ def test_get_output_path():
     prompt_file = Path("test.prompt")
     output_dir = Path("output")
     
+    # Test default PNG format
     output_path = get_output_path(prompt_file, output_dir)
     assert output_path == Path("output/test.png")
+    
+    # Test different formats
+    output_path_jpeg = get_output_path(prompt_file, output_dir, "jpeg")
+    assert output_path_jpeg == Path("output/test.jpeg")
+    
+    output_path_webp = get_output_path(prompt_file, output_dir, "webp")
+    assert output_path_webp == Path("output/test.webp")
 
 
 def test_cli_help():

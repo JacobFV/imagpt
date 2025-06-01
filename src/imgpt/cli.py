@@ -74,25 +74,52 @@ def read_prompt_file(prompt_path: Path) -> str:
     return content
 
 
-def generate_image(client: openai.OpenAI, prompt: str, filename: str) -> bytes:
+def generate_image(client: openai.OpenAI, prompt: str, filename: str, 
+                  model: str = "gpt-image-1", size: str = "1536x1024", 
+                  quality: str = "high", style: str = None, 
+                  output_format: str = "png") -> bytes:
     """Generate an image using OpenAI's API."""
     print(f"🎨 Generating image for {filename}...")
     print(f"📝 Prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
+    print(f"🔧 Model: {model}, Size: {size}, Quality: {quality}")
     
     try:
-        # Truncate prompt if too long for gpt-image-1
-        if len(prompt) > 32000:
-            prompt = prompt[:32000] + "..."
-            print(f"⚠️  Warning: Prompt truncated to 32000 characters")
+        # Validate and truncate prompt based on model
+        max_lengths = {
+            "gpt-image-1": 32000,
+            "dall-e-2": 1000,
+            "dall-e-3": 4000
+        }
         
-        # Generate image using gpt-image-1
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=prompt,
-            n=1,
-            size="1536x1024",  # Landscape format
-            quality="high"
-        )
+        max_length = max_lengths.get(model, 32000)
+        if len(prompt) > max_length:
+            prompt = prompt[:max_length] + "..."
+            print(f"⚠️  Warning: Prompt truncated to {max_length} characters for {model}")
+        
+        # Build API parameters based on model
+        api_params = {
+            "model": model,
+            "prompt": prompt,
+            "n": 1,
+            "size": size,
+            "quality": quality
+        }
+        
+        # Add model-specific parameters
+        if model == "gpt-image-1":
+            if output_format in ["png", "jpeg", "webp"]:
+                api_params["output_format"] = output_format
+        elif model == "dall-e-3":
+            if style in ["vivid", "natural"]:
+                api_params["style"] = style
+            # dall-e-3 uses response_format instead of output_format
+            api_params["response_format"] = "b64_json"
+        elif model == "dall-e-2":
+            # dall-e-2 uses response_format
+            api_params["response_format"] = "b64_json"
+        
+        # Generate image
+        response = client.images.generate(**api_params)
         
         # Decode base64 image data
         image_data = base64.b64decode(response.data[0].b64_json)
@@ -128,15 +155,17 @@ def find_prompt_files(prompts_dir: Path) -> List[Path]:
     return sorted(prompt_files)
 
 
-def get_output_path(prompt_file: Path, output_dir: Path) -> Path:
+def get_output_path(prompt_file: Path, output_dir: Path, output_format: str = "png") -> Path:
     """Get the output path for a prompt file."""
-    # Remove the prompt extension and add .png
+    # Remove the prompt extension and add the output format extension
     base_name = prompt_file.stem
-    return output_dir / f"{base_name}.png"
+    return output_dir / f"{base_name}.{output_format}"
 
 
 def generate_from_directory(client: openai.OpenAI, prompts_dir: Path, output_dir: Path, 
-                          delay: float, skip_existing: bool) -> int:
+                          delay: float, skip_existing: bool, model: str = "gpt-image-1",
+                          size: str = "1536x1024", quality: str = "high", 
+                          style: str = None, output_format: str = "png") -> int:
     """Generate images from a directory of prompt files."""
     # Find all prompt files
     prompt_files = find_prompt_files(prompts_dir)
@@ -151,7 +180,7 @@ def generate_from_directory(client: openai.OpenAI, prompts_dir: Path, output_dir
     success_count = 0
     for prompt_file in prompt_files:
         try:
-            output_path = get_output_path(prompt_file, output_dir)
+            output_path = get_output_path(prompt_file, output_dir, output_format)
             
             # Skip if image already exists and --skip-existing is set
             if skip_existing and output_path.exists():
@@ -165,7 +194,8 @@ def generate_from_directory(client: openai.OpenAI, prompts_dir: Path, output_dir
                 continue
             
             # Generate image
-            image_data = generate_image(client, prompt, prompt_file.name)
+            image_data = generate_image(client, prompt, prompt_file.name, 
+                                      model, size, quality, style, output_format)
             
             # Save image
             save_image(image_data, output_path)
@@ -185,11 +215,15 @@ def generate_from_directory(client: openai.OpenAI, prompts_dir: Path, output_dir
     return 0
 
 
-def generate_from_prompt(client: openai.OpenAI, prompt: str, output_path: Path) -> int:
+def generate_from_prompt(client: openai.OpenAI, prompt: str, output_path: Path,
+                        model: str = "gpt-image-1", size: str = "1536x1024", 
+                        quality: str = "high", style: str = None, 
+                        output_format: str = "png") -> int:
     """Generate a single image from a direct prompt."""
     try:
         # Generate image
-        image_data = generate_image(client, prompt, output_path.name)
+        image_data = generate_image(client, prompt, output_path.name, 
+                                  model, size, quality, style, output_format)
         
         # Save image
         save_image(image_data, output_path)
@@ -239,12 +273,61 @@ def main():
         help="Skip generating images that already exist"
     )
     parser.add_argument(
+        "--model",
+        choices=["gpt-image-1", "dall-e-2", "dall-e-3"],
+        default="gpt-image-1",
+        help="Model to use for image generation (default: gpt-image-1)"
+    )
+    parser.add_argument(
+        "--size",
+        help="Image size (e.g., 1024x1024, 1536x1024, 1024x1536). Defaults vary by model."
+    )
+    parser.add_argument(
+        "--quality",
+        choices=["auto", "high", "medium", "low", "hd", "standard"],
+        default="high",
+        help="Image quality (default: high). Options vary by model."
+    )
+    parser.add_argument(
+        "--style",
+        choices=["vivid", "natural"],
+        help="Image style for DALL-E 3 (vivid or natural)"
+    )
+    parser.add_argument(
+        "--format",
+        dest="output_format",
+        choices=["png", "jpeg", "webp"],
+        default="png",
+        help="Output format for gpt-image-1 (default: png)"
+    )
+    parser.add_argument(
         "--version", 
         action="version", 
         version="%(prog)s 0.1.0"
     )
     
     args = parser.parse_args()
+    
+    # Set default size based on model if not specified
+    if not args.size:
+        size_defaults = {
+            "gpt-image-1": "1536x1024",
+            "dall-e-2": "1024x1024", 
+            "dall-e-3": "1024x1024"
+        }
+        args.size = size_defaults.get(args.model, "1536x1024")
+    
+    # Validate size for each model
+    valid_sizes = {
+        "gpt-image-1": ["1024x1024", "1536x1024", "1024x1536"],
+        "dall-e-2": ["256x256", "512x512", "1024x1024"],
+        "dall-e-3": ["1024x1024", "1792x1024", "1024x1792"]
+    }
+    
+    if args.size not in valid_sizes.get(args.model, []):
+        print(f"❌ Error: Size '{args.size}' is not valid for model '{args.model}'")
+        print(f"Valid sizes for {args.model}: {', '.join(valid_sizes[args.model])}")
+        return 1
     
     print("🤖 AI Image Generator")
     print("=" * 50)
@@ -275,26 +358,30 @@ def main():
         print(f"📂 Output directory: {output_dir}")
         
         return generate_from_directory(
-            client, prompts_dir, output_dir, args.delay, args.skip_existing
+            client, prompts_dir, output_dir, args.delay, args.skip_existing,
+            args.model, args.size, args.quality, args.style, args.output_format
         )
     
     # Handle direct prompt mode
     else:
         if args.output:
             output_path = Path(args.output)
-            # Ensure .png extension
-            if output_path.suffix.lower() != '.png':
-                output_path = output_path.with_suffix('.png')
+            # Ensure correct extension for output format
+            expected_ext = f".{args.output_format}"
+            if output_path.suffix.lower() != expected_ext:
+                output_path = output_path.with_suffix(expected_ext)
         else:
             # Generate filename from prompt
             safe_name = "".join(c for c in args.prompt[:30] if c.isalnum() or c in (' ', '-', '_')).rstrip()
             safe_name = safe_name.replace(' ', '_').lower()
-            output_path = Path(f"{safe_name}.png")
+            output_path = Path(f"{safe_name}.{args.output_format}")
         
         print(f"📝 Prompt: {args.prompt}")
         print(f"📂 Output: {output_path}")
         
-        return generate_from_prompt(client, args.prompt, output_path)
+        return generate_from_prompt(client, args.prompt, output_path,
+                                   args.model, args.size, args.quality, 
+                                   args.style, args.output_format)
 
 
 if __name__ == "__main__":
