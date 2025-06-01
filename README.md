@@ -1,4 +1,4 @@
-# imagpt 🎨
+# imGPT 🎨
 
 A powerful CLI tool for generating images using OpenAI's API. Generate images from text prompts directly or process entire directories of prompt files.
 
@@ -21,13 +21,13 @@ A powerful CLI tool for generating images using OpenAI's API. Generate images fr
 ### Install with pipx (Recommended)
 
 ```bash
-pipx install imagpt
+pipx install imgpt
 ```
 
 ### Install with pip
 
 ```bash
-pip install imagpt
+pip install imgpt
 ```
 
 ### Set up your API key
@@ -39,7 +39,7 @@ export OPENAI_API_KEY="your-api-key-here"
 ### Generate your first image
 
 ```bash
-imagpt "A majestic dragon flying over a medieval castle at sunset"
+imgpt "A majestic dragon flying over a medieval castle at sunset"
 ```
 
 ## 📖 Usage
@@ -50,13 +50,13 @@ Generate a single image from a text prompt:
 
 ```bash
 # Basic usage
-imagpt "A cute robot playing guitar"
+imgpt "A cute robot playing guitar"
 
 # Save to specific file
-imagpt "A space station orbiting Earth" --output space_station.png
+imgpt "A space station orbiting Earth" --output space_station.png
 
 # Custom output location
-imagpt "Abstract art with vibrant colors" --output ./art/abstract.png
+imgpt "Abstract art with vibrant colors" --output ./art/abstract.png
 ```
 
 ### Batch Processing from Directory
@@ -65,13 +65,13 @@ Process multiple prompt files at once:
 
 ```bash
 # Process all prompt files in a directory
-imagpt --dir ./my_prompts
+imgpt --dir ./my_prompts
 
 # Save to different output directory
-imagpt --dir ./prompts --output ./generated_images
+imgpt --dir ./prompts --output ./generated_images
 
 # Skip existing images and use faster processing
-imagpt --dir ./prompts --skip-existing --delay 1
+imgpt --dir ./prompts --skip-existing --delay 1
 ```
 
 ## 📁 Supported File Formats
@@ -100,7 +100,7 @@ A serene Japanese garden with cherry blossoms, a small bridge over a koi pond, a
 ## 🛠️ Command Line Options
 
 ```
-imagpt [OPTIONS] [PROMPT]
+imgpt [OPTIONS] [PROMPT]
 
 Arguments:
   PROMPT                    Direct prompt text for image generation
@@ -120,26 +120,26 @@ Options:
 
 ```bash
 # Simple prompt
-imagpt "A red sports car"
+imgpt "A red sports car"
 
 # Complex prompt with details
-imagpt "A detailed oil painting of a lighthouse on a rocky cliff during a storm, dramatic lighting, high contrast"
+imgpt "A detailed oil painting of a lighthouse on a rocky cliff during a storm, dramatic lighting, high contrast"
 
 # Save with custom name
-imagpt "A minimalist logo design" --output company_logo.png
+imgpt "A minimalist logo design" --output company_logo.png
 ```
 
 ### Batch Processing
 
 ```bash
 # Process directory (saves images alongside prompts)
-imagpt --dir ./product_descriptions
+imgpt --dir ./product_descriptions
 
 # Separate input/output directories
-imagpt --dir ./marketing_prompts --output ./marketing_images
+imgpt --dir ./marketing_prompts --output ./marketing_images
 
 # Production settings (skip existing, faster processing)
-imagpt --dir ./prompts --output ./images --skip-existing --delay 0.5
+imgpt --dir ./prompts --output ./images --skip-existing --delay 0.5
 ```
 
 ## 🔧 Configuration
@@ -164,34 +164,34 @@ The tool generates images with these settings:
 
 ```bash
 # Install globally without affecting system Python
-pipx install imagpt
+pipx install imgpt
 
 # Upgrade
-pipx upgrade imagpt
+pipx upgrade imgpt
 
 # Uninstall
-pipx uninstall imagpt
+pipx uninstall imgpt
 ```
 
 ### Method 2: pip
 
 ```bash
 # Install globally
-pip install imagpt
+pip install imgpt
 
 # Install in virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install imagpt
+pip install imgpt
 ```
 
 ### Method 3: Development Install
 
 ```bash
-git clone https://github.com/humanrobots-ai/imagpt.git
-cd imagpt
+git clone https://github.com/humanrobots-ai/imgpt.git
+cd imgpt
 poetry install
-poetry run imagpt "test prompt"
+poetry run imgpt "test prompt"
 ```
 
 ## 🧪 Development
@@ -203,7 +203,7 @@ poetry run imagpt "test prompt"
 poetry run pytest
 
 # Run with coverage
-poetry run pytest --cov=imagpt
+poetry run pytest --cov=imgpt
 
 # Run specific test
 poetry run pytest tests/test_cli.py::test_read_prompt_file_simple
@@ -269,8 +269,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 - 📧 **Email**: jacobfv123@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/humanrobots-ai/imagpt/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/humanrobots-ai/imagpt/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/humanrobots-ai/imgpt/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/humanrobots-ai/imgpt/discussions)
 
 ## 🙏 Acknowledgments
 

@@ -1,5 +1,5 @@
 [project]
-name = "imagpt"
+name = "imgpt"
 version = "0.1.0"
 description = "AI Image Generator - Generate images using OpenAI API from prompt files or direct input"
 authors = [
@@ -12,11 +12,11 @@ dependencies = [
 ]
 
 [project.scripts]
-imagpt = "imagpt:main"
-generate-images = "imagpt:main"
+imgpt = "imgpt:main"
+generate-images = "imgpt:main"
 
 [tool.poetry]
-packages = [{include = "imagpt", from = "src"}]
+packages = [{include = "imgpt", from = "src"}]
 
 
 [tool.poetry.group.dev.dependencies]

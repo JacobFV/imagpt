@@ -1,5 +1,5 @@
 """
-Tests for the imagpt CLI functionality.
+Tests for the imgpt CLI functionality.
 """
 
 import os
@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from imagpt.cli import (
+from imgpt.cli import (
     read_prompt_file,
     find_prompt_files,
     get_output_path,
@@ -79,19 +79,19 @@ def test_get_output_path():
 def test_cli_help():
     """Test CLI help command."""
     result = subprocess.run(
-        [sys.executable, "-m", "imagpt.cli", "--help"],
+        [sys.executable, "-m", "imgpt.cli", "--help"],
         capture_output=True,
         text=True
     )
     assert result.returncode == 0
-    assert "imagpt" in result.stdout
+    assert "imgpt" in result.stdout
     assert "Generate images using OpenAI API" in result.stdout
 
 
 def test_cli_version():
     """Test CLI version command."""
     result = subprocess.run(
-        [sys.executable, "-m", "imagpt.cli", "--version"],
+        [sys.executable, "-m", "imgpt.cli", "--version"],
         capture_output=True,
         text=True
     )
@@ -103,14 +103,14 @@ def test_missing_api_key():
     """Test behavior when API key is missing."""
     with patch.dict(os.environ, {}, clear=True):
         with pytest.raises(SystemExit):
-            from imagpt.cli import get_api_key
+            from imgpt.cli import get_api_key
             get_api_key()
 
 
 def test_directory_validation():
     """Test directory validation."""
     result = subprocess.run(
-        [sys.executable, "-m", "imagpt.cli", "--dir", "/nonexistent/directory"],
+        [sys.executable, "-m", "imgpt.cli", "--dir", "/nonexistent/directory"],
         capture_output=True,
         text=True,
         env={"OPENAI_API_KEY": "test-key"}

@@ -1,5 +1,5 @@
 """
-imagpt - AI Image Generator
+imgpt - AI Image Generator
 
 A powerful CLI tool for generating images using OpenAI's API.
 """

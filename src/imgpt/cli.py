@@ -207,7 +207,7 @@ def main():
     """Main function to generate images from prompt files or direct prompts."""
     parser = argparse.ArgumentParser(
         description="Generate images using OpenAI API from prompt files or direct input",
-        prog="imagpt"
+        prog="imgpt"
     )
     
     # Mutually exclusive group for input method
