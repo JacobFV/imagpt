@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/JacobFV/imgpt/4a20b43592f56f720a37a86981729479bcf64507/assets/abstract_art_with_vibrant_colo.png)
+
 # imGPT 🎨
 
 A powerful CLI tool for generating images using OpenAI's API. Generate images from text prompts directly or process entire directories of prompt files.
