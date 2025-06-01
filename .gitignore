@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+env/
+venv/
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
+.DS_Store
+*.log
+# Poetry
+poetry.lock
+# Test output
+htmlcov/
+.coverage
+.tox/
+# OS files
+Thumbs.db
+# Local config
+*.local
