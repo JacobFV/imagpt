@@ -110,6 +110,11 @@ Options:
   --output PATH            Output file/directory path
   --delay FLOAT            Delay between API calls in seconds (default: 2.0)
   --skip-existing          Skip generating images that already exist
+  --model MODEL            Model to use: gpt-image-1, dall-e-2, dall-e-3 (default: gpt-image-1)
+  --size SIZE              Image dimensions (e.g., 1024x1024, 1536x1024, 1024x1536)
+  --quality QUALITY        Image quality: auto, high, medium, low, hd, standard (default: high)
+  --style STYLE            Image style for DALL-E 3: vivid, natural
+  --format FORMAT          Output format for gpt-image-1: png, jpeg, webp (default: png)
   --version                Show version and exit
   --help                   Show help message and exit
 ```
@@ -127,6 +132,18 @@ imgpt "A detailed oil painting of a lighthouse on a rocky cliff during a storm, 
 
 # Save with custom name
 imgpt "A minimalist logo design" --output company_logo.png
+
+# Use different models and settings
+imgpt "A futuristic cityscape" --model dall-e-3 --size 1792x1024 --style vivid
+
+# Generate portrait orientation
+imgpt "A portrait of a wise old wizard" --size 1024x1536
+
+# Use DALL-E 2 for faster generation
+imgpt "A simple cartoon cat" --model dall-e-2 --size 512x512
+
+# Generate JPEG format
+imgpt "A landscape photo" --format jpeg --quality high
 ```
 
 ### Batch Processing
@@ -140,6 +157,15 @@ imgpt --dir ./marketing_prompts --output ./marketing_images
 
 # Production settings (skip existing, faster processing)
 imgpt --dir ./prompts --output ./images --skip-existing --delay 0.5
+
+# Batch process with DALL-E 3 for high quality
+imgpt --dir ./art_prompts --model dall-e-3 --quality hd --style natural
+
+# Generate thumbnails with DALL-E 2
+imgpt --dir ./thumbnails --model dall-e-2 --size 256x256
+
+# Batch process with custom format and quality
+imgpt --dir ./web_images --format webp --quality medium --delay 1
 ```
 
 ## 🔧 Configuration
@@ -152,11 +178,20 @@ imgpt --dir ./prompts --output ./images --skip-existing --delay 0.5
 
 ### Image Settings
 
-The tool generates images with these settings:
-- **Model**: gpt-image-1 (OpenAI's latest image model)
-- **Size**: 1536x1024 (landscape format)
-- **Quality**: High
-- **Format**: PNG
+The tool supports multiple models and configurations:
+
+#### Models
+- **gpt-image-1** (default): OpenAI's latest image model
+  - Sizes: 1024x1024, 1536x1024 (landscape), 1024x1536 (portrait)
+  - Quality: auto, high, medium, low
+  - Formats: png, jpeg, webp
+- **dall-e-3**: High-quality artistic images
+  - Sizes: 1024x1024, 1792x1024 (landscape), 1024x1792 (portrait)
+  - Quality: auto, hd, standard
+  - Styles: vivid, natural
+- **dall-e-2**: Fast and cost-effective
+  - Sizes: 256x256, 512x512, 1024x1024
+  - Quality: standard only
 
 ## 📦 Installation Methods
 

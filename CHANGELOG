@@ -1,0 +1,209 @@
+# 🎨 imGPT v0.2.0 Release Notes
+
+**Release Date:** May 26, 2025 
+**Repository:** https://github.com/JacobFV/imgpt
+
+## 🚀 Major New Features
+
+### 🤖 Multi-Model Support
+We've added support for all OpenAI image generation models:
+
+- **gpt-image-1** (default) - OpenAI's latest and most advanced image model
+- **dall-e-3** - High-quality artistic images with style controls
+- **dall-e-2** - Fast and cost-effective image generation
+
+```bash
+# Use different models
+imgpt "A sunset" --model dall-e-3
+imgpt "Quick sketch" --model dall-e-2
+```
+
+### 📐 Multiple Image Dimensions
+Generate images in various aspect ratios and sizes:
+
+**gpt-image-1:**
+- Square: 1024x1024
+- Landscape: 1536x1024
+- Portrait: 1024x1536
+
+**dall-e-3:**
+- Square: 1024x1024
+- Landscape: 1792x1024
+- Portrait: 1024x1792
+
+**dall-e-2:**
+- Small: 256x256
+- Medium: 512x512
+- Large: 1024x1024
+
+```bash
+# Generate in different orientations
+imgpt "Landscape photo" --size 1792x1024
+imgpt "Portrait painting" --size 1024x1536
+imgpt "Thumbnail" --model dall-e-2 --size 256x256
+```
+
+### 🎨 Quality & Style Controls
+Fine-tune your image generation:
+
+- **Quality levels:** auto, high, medium, low, hd, standard
+- **Style options:** vivid, natural (DALL-E 3 only)
+- **Output formats:** PNG, JPEG, WebP (gpt-image-1 only)
+
+```bash
+# High-quality artistic image
+imgpt "Abstract art" --model dall-e-3 --quality hd --style vivid
+
+# Web-optimized JPEG
+imgpt "Website banner" --format jpeg --quality medium
+```
+
+## 🛡️ Enhanced Validation & Intelligence
+
+### Smart Model Validation
+- Automatic validation of size compatibility with each model
+- Model-specific prompt length limits (32K for gpt-image-1, 4K for dall-e-3, 1K for dall-e-2)
+- Intelligent default sizes based on selected model
+
+### Better Error Messages
+```bash
+$ imgpt "test" --model dall-e-2 --size 2048x2048
+❌ Error: Size '2048x2048' is not valid for model 'dall-e-2'
+Valid sizes for dall-e-2: 256x256, 512x512, 1024x1024
+```
+
+## 📖 Comprehensive Documentation Updates
+
+### Updated CLI Help
+```bash
+$ imgpt --help
+Options:
+  --model {gpt-image-1,dall-e-2,dall-e-3}    Model to use (default: gpt-image-1)
+  --size SIZE                                 Image dimensions (e.g., 1024x1024)
+  --quality {auto,high,medium,low,hd,standard} Image quality (default: high)
+  --style {vivid,natural}                     DALL-E 3 style options
+  --format {png,jpeg,webp}                    Output format (default: png)
+```
+
+### Enhanced README
+- Detailed model comparison table
+- Comprehensive usage examples
+- Best practices for each model
+- Cost optimization tips
+
+## 🔧 Technical Improvements
+
+### API Integration
+- Full support for OpenAI's latest image generation API parameters
+- Model-specific parameter handling
+- Proper response format handling for each model
+
+### Code Quality
+- Enhanced type hints and documentation
+- Improved error handling and validation
+- Extended test coverage for new features
+- Backward compatibility maintained
+
+## 📋 Usage Examples
+
+### Single Image Generation
+```bash
+# Default high-quality generation
+imgpt "A majestic eagle in flight"
+
+# Artistic style with DALL-E 3
+imgpt "Surreal landscape" --model dall-e-3 --style vivid --quality hd
+
+# Fast generation for prototyping
+imgpt "Logo concept" --model dall-e-2 --size 512x512
+
+# Custom format and quality
+imgpt "Web image" --format jpeg --quality medium --size 1536x1024
+```
+
+### Batch Processing
+```bash
+# High-quality art generation
+imgpt --dir ./art_prompts --model dall-e-3 --quality hd --style natural
+
+# Thumbnail generation
+imgpt --dir ./thumbnails --model dall-e-2 --size 256x256
+
+# Web-optimized batch processing
+imgpt --dir ./web_images --format webp --quality medium
+```
+
+## 🔄 Breaking Changes
+**None** - This release maintains full backward compatibility. All existing commands will continue to work exactly as before.
+
+## 🐛 Bug Fixes
+- Fixed output format handling for different models
+- Improved prompt length validation
+- Enhanced file extension handling for custom output formats
+
+## 🚀 Performance Improvements
+- Optimized API parameter building
+- Reduced unnecessary API calls through better validation
+- Improved error handling reduces retry overhead
+
+## 📦 Installation & Upgrade
+
+### New Installation
+```bash
+# Install with pipx (recommended)
+pipx install imgpt
+
+# Install with pip
+pip install imgpt
+```
+
+### Upgrade from v0.1.0
+```bash
+# Upgrade with pipx
+pipx upgrade imgpt
+
+# Upgrade with pip
+pip install --upgrade imgpt
+```
+
+## 🙏 Acknowledgments
+- OpenAI for their comprehensive image generation API
+- Community feedback that drove these feature requests
+- Contributors who helped test the new functionality
+
+## 🔮 What's Next?
+- Batch size optimization for faster processing
+- Image editing and variation capabilities
+- Integration with popular design tools
+- Advanced prompt templating system
+
+---
+
+**Full Changelog:** https://github.com/JacobFV/imgpt/compare/v0.1.0...v0.2.0  
+**Download:** https://github.com/JacobFV/imgpt/releases/tag/v0.2.0
+
+Made with ❤️ by [Jacob Valdez](https://github.com/jacobfv123)
+
+---
+
+# 🎨 imGPT v1.0.0 Release Notes
+
+**Release Date:** May 26, 2025
+**Repository:** https://github.com/JacobFV/imgpt
+
+## 🚀 Features
+
+- Generate images from text prompts using OpenAI's image-gpt model
+- Supports direct prompt input and batch processing of prompt files
+- Output images in PNG format
+- Simple CLI interface
+
+## 🐛 Bug Fixes
+
+- Initial release, no known bugs
+
+## 📦 Installation
+
+```
+pip install imgpt
+```

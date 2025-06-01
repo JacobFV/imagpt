@@ -1,6 +1,6 @@
 [project]
 name = "imgpt"
-version = "0.1.0"
+version = "0.2.0"
 description = "AI Image Generator - Generate images using OpenAI API from prompt files or direct input"
 authors = [
     {name = "Jacob Valdez",email = "jacobfv123@gmail.com"}
