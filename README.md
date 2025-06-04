@@ -2,7 +2,7 @@
 
 # imGPT 🎨
 
-A powerful CLI tool for generating images using OpenAI's API. Generate images from text prompts directly or process entire directories of prompt files.
+A powerful CLI tool with persistent configuration for generating images using OpenAI's API. Generate images from text prompts directly or process entire directories of prompt files.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![OpenAI API](https://img.shields.io/badge/OpenAI-API-green.svg)](https://openai.com/api/)
@@ -10,12 +10,14 @@ A powerful CLI tool for generating images using OpenAI's API. Generate images fr
 
 ## ✨ Features
 
+- 🔧 **Persistent Configuration**: Save API keys, default models, and preferences
 - 🚀 **Direct Prompt Generation**: Generate images from command-line prompts
 - 📁 **Batch Processing**: Process entire directories of prompt files
 - 🎯 **Multiple Formats**: Support for `.prompt`, `.txt`, and `.md` files
 - 🔄 **Smart Skipping**: Skip existing images to save time and API costs
 - ⚡ **Rate Limiting**: Configurable delays to respect API limits
-- 🎨 **High Quality**: Uses OpenAI's gpt-image-1 model for best results
+- 🎨 **Multi-Model Support**: gpt-image-1, DALL-E 3, and DALL-E 2
+- 🌈 **Rich CLI**: Beautiful colored output with Typer and Rich
 - 📦 **Easy Install**: Install globally with pipx
 
 ## 🚀 Quick Start
@@ -35,30 +37,52 @@ pip install imgpt
 ### Set up your API key
 
 ```bash
+# Option 1: Save in configuration (recommended)
+imgpt config set openai_api_key "your-api-key-here"
+
+# Option 2: Use environment variable
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
 ### Generate your first image
 
 ```bash
-imgpt "A majestic dragon flying over a medieval castle at sunset"
+imgpt generate "A majestic dragon flying over a medieval castle at sunset"
 ```
 
 ## 📖 Usage
+
+### Configuration Management
+
+Set up your preferences once and use them everywhere:
+
+```bash
+# Set up your API key and preferences
+imgpt config set openai_api_key "your-key-here"
+imgpt config set default_model "dall-e-3"
+imgpt config set default_quality "hd"
+imgpt config set default_output_dir "~/Pictures/AI-Generated"
+
+# View current configuration
+imgpt config show
+
+# Reset to defaults
+imgpt config reset
+```
 
 ### Direct Prompt Generation
 
 Generate a single image from a text prompt:
 
 ```bash
-# Basic usage
-imgpt "A cute robot playing guitar"
+# Basic usage (uses your configured defaults)
+imgpt generate "A cute robot playing guitar"
 
-# Save to specific file
-imgpt "A space station orbiting Earth" --output space_station.png
+# Override defaults for specific generation
+imgpt generate "A space station orbiting Earth" --output space_station.png --model gpt-image-1
 
 # Custom output location
-imgpt "Abstract art with vibrant colors" --output ./art/abstract.png
+imgpt generate "Abstract art with vibrant colors" --output ./art/abstract.png
 ```
 
 ### Batch Processing from Directory
@@ -66,14 +90,14 @@ imgpt "Abstract art with vibrant colors" --output ./art/abstract.png
 Process multiple prompt files at once:
 
 ```bash
-# Process all prompt files in a directory
-imgpt --dir ./my_prompts
+# Process all prompt files in a directory (uses configured defaults)
+imgpt generate --dir ./my_prompts
 
 # Save to different output directory
-imgpt --dir ./prompts --output ./generated_images
+imgpt generate --dir ./prompts --output ./generated_images
 
 # Skip existing images and use faster processing
-imgpt --dir ./prompts --skip-existing --delay 1
+imgpt generate --dir ./prompts --skip-existing --delay 1
 ```
 
 ## 📁 Supported File Formats
@@ -101,82 +125,137 @@ A serene Japanese garden with cherry blossoms, a small bridge over a koi pond, a
 
 ## 🛠️ Command Line Options
 
-```
-imgpt [OPTIONS] [PROMPT]
+### Main Commands
 
+```bash
+imgpt generate [OPTIONS] [PROMPT]    # Generate images
+imgpt config [COMMAND]               # Manage configuration  
+imgpt version                         # Show version
+```
+
+### Generate Command Options
+
+```
 Arguments:
   PROMPT                    Direct prompt text for image generation
 
 Options:
   --dir PATH               Directory containing prompt files
   --output PATH            Output file/directory path
-  --delay FLOAT            Delay between API calls in seconds (default: 2.0)
+  --delay FLOAT            Delay between API calls in seconds
   --skip-existing          Skip generating images that already exist
-  --model MODEL            Model to use: gpt-image-1, dall-e-2, dall-e-3 (default: gpt-image-1)
+  --model MODEL            Model to use: gpt-image-1, dall-e-2, dall-e-3
   --size SIZE              Image dimensions (e.g., 1024x1024, 1536x1024, 1024x1536)
-  --quality QUALITY        Image quality: auto, high, medium, low, hd, standard (default: high)
+  --quality QUALITY        Image quality: auto, high, medium, low, hd, standard
   --style STYLE            Image style for DALL-E 3: vivid, natural
-  --format FORMAT          Output format for gpt-image-1: png, jpeg, webp (default: png)
-  --version                Show version and exit
+  --format FORMAT          Output format: png, jpeg, webp
   --help                   Show help message and exit
+```
+
+### Configuration Commands
+
+```bash
+imgpt config show                    # Display current configuration
+imgpt config set KEY VALUE           # Set a configuration value
+imgpt config reset                   # Reset to default configuration
+imgpt config path                    # Show configuration file path
 ```
 
 ## 📋 Examples
 
+### Configuration Examples
+
+```bash
+# First-time setup
+imgpt config set openai_api_key "your-key-here"
+imgpt config set default_model "dall-e-3"
+imgpt config set default_quality "hd"
+imgpt config set default_output_dir "~/Pictures/AI-Generated"
+
+# View your settings
+imgpt config show
+
+# Update specific settings
+imgpt config set default_size "1792x1024"
+imgpt config set skip_existing true
+```
+
 ### Single Image Generation
 
 ```bash
-# Simple prompt
-imgpt "A red sports car"
+# Simple prompt (uses your configured defaults)
+imgpt generate "A red sports car"
 
 # Complex prompt with details
-imgpt "A detailed oil painting of a lighthouse on a rocky cliff during a storm, dramatic lighting, high contrast"
+imgpt generate "A detailed oil painting of a lighthouse on a rocky cliff during a storm, dramatic lighting, high contrast"
 
 # Save with custom name
-imgpt "A minimalist logo design" --output company_logo.png
+imgpt generate "A minimalist logo design" --output company_logo.png
 
-# Use different models and settings
-imgpt "A futuristic cityscape" --model dall-e-3 --size 1792x1024 --style vivid
+# Override defaults for specific generation
+imgpt generate "A futuristic cityscape" --model dall-e-3 --size 1792x1024 --style vivid
 
 # Generate portrait orientation
-imgpt "A portrait of a wise old wizard" --size 1024x1536
+imgpt generate "A portrait of a wise old wizard" --size 1024x1536
 
 # Use DALL-E 2 for faster generation
-imgpt "A simple cartoon cat" --model dall-e-2 --size 512x512
+imgpt generate "A simple cartoon cat" --model dall-e-2 --size 512x512
 
 # Generate JPEG format
-imgpt "A landscape photo" --format jpeg --quality high
+imgpt generate "A landscape photo" --format jpeg --quality high
 ```
 
 ### Batch Processing
 
 ```bash
 # Process directory (saves images alongside prompts)
-imgpt --dir ./product_descriptions
+imgpt generate --dir ./product_descriptions
 
 # Separate input/output directories
-imgpt --dir ./marketing_prompts --output ./marketing_images
+imgpt generate --dir ./marketing_prompts --output ./marketing_images
 
 # Production settings (skip existing, faster processing)
-imgpt --dir ./prompts --output ./images --skip-existing --delay 0.5
+imgpt generate --dir ./prompts --output ./images --skip-existing --delay 0.5
 
 # Batch process with DALL-E 3 for high quality
-imgpt --dir ./art_prompts --model dall-e-3 --quality hd --style natural
+imgpt generate --dir ./art_prompts --model dall-e-3 --quality hd --style natural
 
 # Generate thumbnails with DALL-E 2
-imgpt --dir ./thumbnails --model dall-e-2 --size 256x256
+imgpt generate --dir ./thumbnails --model dall-e-2 --size 256x256
 
 # Batch process with custom format and quality
-imgpt --dir ./web_images --format webp --quality medium --delay 1
+imgpt generate --dir ./web_images --format webp --quality medium --delay 1
 ```
 
 ## 🔧 Configuration
+
+### Configuration File
+
+imgpt stores configuration in a platform-specific location:
+- **macOS**: `~/Library/Application Support/imgpt/config.toml`
+- **Linux**: `~/.config/imgpt/config.toml`  
+- **Windows**: `%APPDATA%/imgpt/config.toml`
+
+### Configuration Options
+
+| Setting | Type | Description | Default |
+|---------|------|-------------|---------|
+| `openai_api_key` | string | Your OpenAI API key | None |
+| `default_model` | string | Default model (gpt-image-1, dall-e-2, dall-e-3) | gpt-image-1 |
+| `default_size` | string | Default image size (e.g., 1024x1024) | Auto |
+| `default_quality` | string | Default quality (auto, high, medium, low, hd, standard) | high |
+| `default_style` | string | Default style for DALL-E 3 (vivid, natural) | None |
+| `default_format` | string | Default output format (png, jpeg, webp) | png |
+| `default_prompts_dir` | string | Default directory for prompt files | None |
+| `default_output_dir` | string | Default directory for generated images | None |
+| `default_delay` | float | Default delay between API calls (seconds) | 2.0 |
+| `skip_existing` | boolean | Default setting for skipping existing images | false |
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENAI_API_KEY` | ✅ | Your OpenAI API key |
+| `OPENAI_API_KEY` | ✅ | Your OpenAI API key (fallback if not in config) |
 
 ### Image Settings
 

@@ -1,4 +1,263 @@
-# 🎨 imGPT v0.2.0 Release Notes
+# 🎨 imgpt v0.3.0 Release Notes
+
+**Release Date:** December 26, 2024  
+**Repository:** https://github.com/JacobFV/imgpt
+
+## 🚀 Major New Features
+
+### 🔧 Persistent Configuration System
+We've added a comprehensive persistent configuration system that allows you to save your preferences and avoid repeating command-line options:
+
+- **API Key Storage** - Store your OpenAI API key securely in configuration
+- **Default Settings** - Set default models, sizes, quality, and other generation parameters
+- **Directory Preferences** - Configure default prompt and output directories
+- **Cross-Platform** - Configuration stored in appropriate OS-specific directories
+
+```bash
+# Set your API key once
+imgpt config set openai_api_key "your-key-here"
+
+# Set default preferences
+imgpt config set default_model "dall-e-3"
+imgpt config set default_size "1024x1024"
+imgpt config set default_quality "hd"
+imgpt config set default_output_dir "/path/to/images"
+
+# View current configuration
+imgpt config show
+
+# Reset to defaults
+imgpt config reset
+```
+
+### 🎨 Enhanced CLI with Typer
+Complete rewrite of the CLI using Typer for a better user experience:
+
+- **Rich Output** - Beautiful colored output with progress indicators
+- **Better Help** - Comprehensive help system with examples
+- **Subcommands** - Organized command structure (`imgpt generate`, `imgpt config`)
+- **Auto-completion** - Shell completion support for commands and options
+- **Validation** - Better input validation with helpful error messages
+
+```bash
+# New command structure
+imgpt generate "A beautiful sunset"           # Direct prompt
+imgpt generate --dir ./prompts               # Batch processing
+imgpt config show                            # Configuration management
+imgpt version                                 # Version information
+```
+
+### 📁 Smart Configuration Management
+The configuration system intelligently handles defaults and overrides:
+
+- **Precedence Order**: Command-line options → Configuration file → Built-in defaults
+- **Validation**: All configuration values are validated before saving
+- **Platform-Aware**: Uses OS-appropriate configuration directories
+  - **macOS**: `~/Library/Application Support/imgpt/`
+  - **Linux**: `~/.config/imgpt/`
+  - **Windows**: `%APPDATA%/imgpt/`
+
+## 🛡️ Enhanced Validation & Error Handling
+
+### Smart Input Validation
+- **Model-Size Compatibility**: Automatic validation of size/model combinations
+- **Configuration Validation**: Pydantic-based validation for all settings
+- **Directory Validation**: Checks for directory existence and permissions
+- **API Key Handling**: Secure storage and retrieval with fallback to environment
+
+### Better Error Messages
+```bash
+$ imgpt generate "test" --model dall-e-2 --size 2048x2048
+❌ Error: Size '2048x2048' is not valid for model 'dall-e-2'
+Valid sizes for dall-e-2: 256x256, 512x512, 1024x1024
+```
+
+## 📖 Configuration Options
+
+### API Settings
+- `openai_api_key` - Your OpenAI API key
+  
+### Generation Settings  
+- `default_model` - Default model (`gpt-image-1`, `dall-e-2`, `dall-e-3`)
+- `default_size` - Default image size (e.g., `1024x1024`, `1536x1024`)
+- `default_quality` - Default quality (`auto`, `high`, `medium`, `low`, `hd`, `standard`)
+- `default_style` - Default style for DALL-E 3 (`vivid`, `natural`)
+- `default_format` - Default output format (`png`, `jpeg`, `webp`)
+
+### Directory Settings
+- `default_prompts_dir` - Default directory for prompt files
+- `default_output_dir` - Default directory for generated images
+
+### Processing Settings
+- `default_delay` - Default delay between API calls (seconds)
+- `skip_existing` - Default setting for skipping existing images
+
+## 🔄 Breaking Changes
+
+### Command Structure Changes
+The CLI now uses subcommands for better organization:
+
+**Old (v0.2.0):**
+```bash
+imgpt "A sunset" --output sunset.png
+imgpt --dir ./prompts --output ./images
+```
+
+**New (v0.3.0):**
+```bash
+imgpt generate "A sunset" --output sunset.png
+imgpt generate --dir ./prompts --output ./images
+```
+
+### Removed Options
+- `--version` flag moved to `imgpt version` command
+- Direct execution requires `generate` subcommand
+
+## 🔧 Technical Improvements
+
+### Dependencies
+- **Added**: `typer[all]` for enhanced CLI experience
+- **Added**: `pydantic` for configuration validation
+- **Added**: `rich` for beautiful terminal output
+- **Added**: `tomli-w` for TOML configuration file writing
+
+### Code Quality
+- **Type Safety**: Enhanced type hints throughout codebase
+- **Validation**: Pydantic models for configuration validation
+- **Testing**: Comprehensive test suite for configuration system
+- **Documentation**: Extensive inline documentation and examples
+
+### Performance
+- **Configuration Caching**: Configuration loaded once and cached
+- **Lazy Loading**: Configuration only loaded when needed
+- **Efficient Validation**: Fast validation with detailed error messages
+
+## 📋 Usage Examples
+
+### First-Time Setup
+```bash
+# Install imgpt
+pipx install imgpt
+
+# Set up your API key
+imgpt config set openai_api_key "your-openai-api-key"
+
+# Set your preferences
+imgpt config set default_model "dall-e-3"
+imgpt config set default_quality "hd"
+imgpt config set default_output_dir "~/Pictures/AI-Generated"
+
+# Generate your first image
+imgpt generate "A majestic dragon flying over a medieval castle"
+```
+
+### Advanced Configuration
+```bash
+# Set up for batch processing
+imgpt config set default_prompts_dir "~/Documents/Prompts"
+imgpt config set default_output_dir "~/Pictures/Generated"
+imgpt config set default_delay 1.0
+imgpt config set skip_existing true
+
+# Now batch processing is simple
+imgpt generate --dir ~/Documents/Prompts
+```
+
+### Configuration Management
+```bash
+# View all settings
+imgpt config show
+
+# Update specific settings
+imgpt config set default_model "gpt-image-1"
+imgpt config set default_size "1536x1024"
+
+# Reset everything to defaults
+imgpt config reset
+
+# Find your config file
+imgpt config path
+```
+
+## 🐛 Bug Fixes
+- Fixed output format handling for different models
+- Improved prompt length validation and truncation
+- Enhanced file extension handling for custom output formats
+- Better error handling for configuration file corruption
+
+## 🚀 Performance Improvements
+- Reduced startup time through lazy configuration loading
+- Optimized validation pipeline
+- Improved memory usage for large batch operations
+- Better error recovery and retry logic
+
+## 📦 Installation & Upgrade
+
+### New Installation
+```bash
+# Install with pipx (recommended)
+pipx install imgpt
+
+# Install with pip
+pip install imgpt
+```
+
+### Upgrade from v0.2.0
+```bash
+# Upgrade with pipx
+pipx upgrade imgpt
+
+# Upgrade with pip
+pip install --upgrade imgpt
+
+# Note: First run will create new configuration file
+imgpt config show
+```
+
+## 🔮 Migration Guide
+
+### From v0.2.0 to v0.3.0
+
+1. **Update Commands**: Add `generate` subcommand to existing scripts
+2. **Set Configuration**: Use `imgpt config set` to save frequently used options
+3. **Update Scripts**: Replace `--version` with `imgpt version`
+
+**Example Migration:**
+```bash
+# Old
+imgpt "A sunset" --model dall-e-3 --quality hd --output sunset.png
+
+# New - one-time setup
+imgpt config set default_model "dall-e-3"
+imgpt config set default_quality "hd"
+
+# New - simplified usage
+imgpt generate "A sunset" --output sunset.png
+```
+
+## 🙏 Acknowledgments
+- Typer team for the excellent CLI framework
+- Pydantic team for robust data validation
+- Rich team for beautiful terminal output
+- Community feedback that drove these improvements
+
+## 🔮 What's Next?
+- Configuration profiles for different use cases
+- Batch operation optimization
+- Integration with popular design tools
+- Advanced prompt templating system
+- Configuration import/export functionality
+
+---
+
+**Full Changelog:** https://github.com/JacobFV/imgpt/compare/v0.2.0...v0.3.0  
+**Download:** https://github.com/JacobFV/imgpt/releases/tag/v0.3.0
+
+Made with ❤️ by [Jacob Valdez](https://github.com/jacobfv123)
+
+---
+
+# 🎨 imgpt v0.2.0 Release Notes
 
 **Release Date:** May 26, 2025 
 **Repository:** https://github.com/JacobFV/imgpt
@@ -186,7 +445,7 @@ Made with ❤️ by [Jacob Valdez](https://github.com/jacobfv123)
 
 ---
 
-# 🎨 imGPT v1.0.0 Release Notes
+# 🎨 imgpt v1.0.0 Release Notes
 
 **Release Date:** May 26, 2025
 **Repository:** https://github.com/JacobFV/imgpt

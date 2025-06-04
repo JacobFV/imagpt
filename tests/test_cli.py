@@ -10,12 +10,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from typer.testing import CliRunner
 
 from imgpt.cli import (
     read_prompt_file,
     find_prompt_files,
     get_output_path,
-    main
+    app
 )
 
 
@@ -86,42 +87,67 @@ def test_get_output_path():
 
 def test_cli_help():
     """Test CLI help command."""
-    result = subprocess.run(
-        [sys.executable, "-m", "imgpt.cli", "--help"],
-        capture_output=True,
-        text=True
-    )
-    assert result.returncode == 0
-    assert "imgpt" in result.stdout
+    runner = CliRunner()
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    assert "AI Image Generator" in result.stdout
     assert "Generate images using OpenAI API" in result.stdout
 
 
 def test_cli_version():
     """Test CLI version command."""
-    result = subprocess.run(
-        [sys.executable, "-m", "imgpt.cli", "--version"],
-        capture_output=True,
-        text=True
-    )
-    assert result.returncode == 0
-    assert "0.1.0" in result.stdout
+    runner = CliRunner()
+    result = runner.invoke(app, ["version"])
+    assert result.exit_code == 0
+    assert "v0.3.0" in result.stdout
 
 
-def test_missing_api_key():
-    """Test behavior when API key is missing."""
-    with patch.dict(os.environ, {}, clear=True):
-        with pytest.raises(SystemExit):
-            from imgpt.cli import get_api_key
-            get_api_key()
+def test_config_show():
+    """Test config show command."""
+    runner = CliRunner()
+    result = runner.invoke(app, ["config", "show"])
+    assert result.exit_code == 0
+    assert "Current Configuration" in result.stdout
+    assert "API Settings" in result.stdout
 
 
-def test_directory_validation():
-    """Test directory validation."""
-    result = subprocess.run(
-        [sys.executable, "-m", "imgpt.cli", "--dir", "/nonexistent/directory"],
-        capture_output=True,
-        text=True,
-        env={"OPENAI_API_KEY": "test-key"}
-    )
-    assert result.returncode == 1
-    assert "does not exist" in result.stdout 
+def test_config_set():
+    """Test config set command."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with patch('imgpt.config.ConfigManager._get_config_dir', return_value=Path(temp_dir)):
+            runner = CliRunner()
+            result = runner.invoke(app, ["config", "set", "default_model", "dall-e-2"])
+            assert result.exit_code == 0
+            assert "Set default_model = dall-e-2" in result.stdout
+
+
+def test_generate_help():
+    """Test generate command help."""
+    runner = CliRunner()
+    result = runner.invoke(app, ["generate", "--help"])
+    assert result.exit_code == 0
+    assert "Generate images from prompts" in result.stdout
+
+
+def test_generate_missing_input():
+    """Test generate command with missing input."""
+    runner = CliRunner()
+    result = runner.invoke(app, ["generate"])
+    assert result.exit_code == 1
+    assert "Must provide either a prompt or a directory" in result.stdout
+
+
+def test_generate_invalid_directory():
+    """Test generate command with invalid directory."""
+    runner = CliRunner()
+    result = runner.invoke(app, ["generate", "--dir", "/nonexistent/directory"])
+    assert result.exit_code == 1
+    assert "does not exist" in result.stdout
+
+
+def test_generate_invalid_model_size():
+    """Test generate command with invalid model/size combination."""
+    runner = CliRunner()
+    result = runner.invoke(app, ["generate", "test prompt", "--model", "dall-e-2", "--size", "2048x2048"])
+    assert result.exit_code == 1
+    assert "not valid for model" in result.stdout 
